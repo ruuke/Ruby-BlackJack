@@ -16,4 +16,11 @@ class Desk
               "K+" => 10, "K<3" => 10, "K^" => 10, "K<>" => 10,
               "A+" => 1, "A<3" => 1, "A^" => 1, "A<>" => 1 }
   end
+
+  def give_cards(user, numder_of_cards)
+    sample = @desk.keys.sample(numder_of_cards)
+    random_cards = @desk.select { |key, value| sample.include?(key) }
+    user.add_cards(random_cards)
+    @desk.delete_if { |key, value| sample.include?(key) }
+  end
 end

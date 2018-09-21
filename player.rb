@@ -1,10 +1,4 @@
-class Player
-  attr_reader :name, :cash
+require_relative 'users'
 
-  def initialize(name)
-    @name = name
-    @cash = 100
-  end
-
-
+class Player < Users
 end

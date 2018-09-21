@@ -1,8 +1,7 @@
 class Bank
-  attr_reader :bank_size
+  attr_accessor :bank_size
 
   def initialize
     @bank_size = 0
   end
-
 end

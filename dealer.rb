@@ -1,7 +1,4 @@
-class Dealer
-  attr_reader :cash
-  
-  def initialize
-    @cash = 100
-  end
+require_relative 'users'
+
+class Dealer < Users
 end
