@@ -1,8 +1,8 @@
 class Desk
-  attr_reader :desk
+  attr_reader :desk_new
 
   def initialize
-    @desk = { "2+" => 2, "2<3" => 2, "2^" => 2, "2<>" => 2,
+    @desk_new = { "2+" => 2, "2<3" => 2, "2^" => 2, "2<>" => 2,
               "3+" => 3, "3<3" => 3, "3^" => 3, "3<>" => 3,
               "4+" => 4, "4<3" => 4, "4^" => 4, "4<>" => 4,
               "5+" => 5, "5<3" => 5, "5^" => 5, "5<>" => 5,
@@ -15,12 +15,5 @@ class Desk
               "Q+" => 10, "Q<3" => 10, "Q^" => 10, "Q<>" => 10,
               "K+" => 10, "K<3" => 10, "K^" => 10, "K<>" => 10,
               "A+" => 1, "A<3" => 1, "A^" => 1, "A<>" => 1 }
-  end
-
-  def give_cards(user, numder_of_cards)
-    sample = @desk.keys.sample(numder_of_cards)
-    random_cards = @desk.select { |key, value| sample.include?(key) }
-    user.add_cards(random_cards)
-    @desk.delete_if { |key, value| sample.include?(key) }
   end
 end

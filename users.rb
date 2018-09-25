@@ -11,19 +11,26 @@ class Users
   def count_points
     points = []
     @cards.each { |i| points << i.values.sum }
-    points.each.sum
+    resualt = points.each.sum
+    if resualt <= 11 && self.has_an_ace?
+      resualt += 10
+    else
+      resualt
+    end
   end
 
-  def ace_count
+  def has_an_ace?
+    show_cards.any?(/A/)
   end
-
 
   def bet(bank)
-    @cash -= 10
-    bank.bank_size +=10
-  end
-
-  def take_card
+    if @cash > 0
+      @cash -= 10 
+      bank.bank_size +=10
+    else
+      puts "You don't have enough money to continue the game."
+      exit
+    end
   end
 
   def add_cards(cards)
@@ -35,6 +42,6 @@ class Users
     @cards.each do |i|
       i.each_key { |key| @user_cards << key }
     end
-    puts @user_cards.to_s
+    @user_cards
   end
 end
