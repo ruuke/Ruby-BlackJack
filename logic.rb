@@ -4,7 +4,7 @@ require_relative 'desk'
 require_relative 'rounds'
 
 class Logic
-  attr_reader :desk
+  attr_reader :desk, :status
 
   def initialize
     @player = Users.new
@@ -16,56 +16,57 @@ class Logic
     @player.cards = []
     @dealer.cards = []
     @rounds = Rounds.new
-    round1(@dealer, @player)
+    @status = {}
+    round1
   end
 
-  def round1(dealer, player)
+  def round1
     @rounds.give_cards(@dealer, 2)
     @rounds.give_cards(@player, 2)
     @player.bet(@bank)
     @dealer.bet(@bank)
-    puts "Your cards #{player.show_cards.inspect}"
-    puts "Your points #{player.count_points}" 
+    status[:player_score] = @player.count_points
+    status[:player_cards] = @player.show_cards
+    status[:dealer_score] = "hidden"
+    status[:dealer_cards] = "hidden"
+    status[:status] = "player turn"
   end
 
   def dealer_step_round2
     if @dealer.count_points >= 17
-      puts "Dealer check's."
+      status[:status] = "Dealer check's."
     elsif @dealer.count_points < 17
       @rounds.give_cards(@dealer, 1)
-      puts "Dealer took one card."
+      status[:status] = "Dealer took one card."
     end
   end
 
    def dealer_step_round3
     if @dealer.count_points >= 17
-      puts "Dealer check's."
+      status[:status] = "Dealer check's."
       open_cards
     elsif @dealer.count_points < 17
       @rounds.give_cards(@dealer, 1)
-      puts "Dealer took one card."
+      status[:status] = "Dealer took one card."
       open_cards
     end
   end
 
   def take_one_card_round2
     @rounds.give_cards(@player, 1)
-    puts "Your cards #{@player.show_cards}"
-    puts "Your points #{@player.count_points}"
     dealer_step_round3
   end
 
   def take_one_card_round3
     @rounds.give_cards(@player, 1)
-    puts "Your cards #{@player.show_cards}"
-    puts "Your points #{@player.count_points}"
     open_cards
   end
 
   def open_cards
-    puts "Dealer cards #{@dealer.show_cards}"
-    puts "Dealer points #{@dealer.count_points}"
-    puts "Your points #{@player.count_points}"
+    status[:player_score] = @player.count_points
+    status[:player_cards] = @player.show_cards
+    status[:dealer_score] = @dealer.count_points
+    status[:dealer_cards] = @dealer.show_cards
     if @dealer.count_points > 21 && @player.count_points <= 21
       player_win
     elsif @dealer.count_points <= 21 && @player.count_points > 21
@@ -75,27 +76,30 @@ class Logic
     elsif @dealer.count_points < @player.count_points
       player_win
     elsif @dealer.count_points == @player.count_points && @player.count_points <= 21
-      puts "Both wins."
       both_wins(@player, @dealer)
     elsif @dealer.count_points > 21 && @player.count_points > 21
-      puts "Both lose."
-      both_wins(@player, @dealer)
+      both_lost(@player, @dealer)
     end
   end
 
   def player_lose
-    puts "You lose."
+    status[:status] = "You lose."
     take_bank(@bank, @dealer)
-    puts "Dealer cash #{@dealer.cash}"
   end
 
   def player_win
-    puts "You win."
+    status[:status] = "You win."
     take_bank(@bank, @player)
-    puts "Your cash #{@player.cash}"
   end
 
   def both_wins(player, dealer)
+    status[:status] = "Both wins"
+    player.cash += 10
+    dealer.cash += 10
+  end
+
+  def both_lost(player, dealer)
+    status[:status] = "Both lost"
     player.cash += 10
     dealer.cash += 10
   end
