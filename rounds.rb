@@ -4,7 +4,6 @@ class Rounds
   
   def initialize
     @desk = Desk.new
-    
   end
 
   def give_cards(user, number_of_cards)

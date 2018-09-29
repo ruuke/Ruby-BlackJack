@@ -3,11 +3,12 @@ require_relative 'bank'
 require_relative 'desk'
 require_relative 'rounds'
 
-class Logic
+class Game
+  #attr_accessor :bank
   attr_reader :desk, :status
 
-  def initialize
-    @player = Users.new
+  def initialize(player_name)
+    @player = Users.new(player_name)
     @dealer = Users.new
   end
 
@@ -25,6 +26,7 @@ class Logic
     @rounds.give_cards(@player, 2)
     @player.bet(@bank)
     @dealer.bet(@bank)
+    status[:bank] = @bank.bank_size
     status[:player_score] = @player.count_points
     status[:player_cards] = @player.show_cards
     status[:dealer_score] = "hidden"
@@ -63,24 +65,28 @@ class Logic
   end
 
   def open_cards
-    status[:player_score] = @player.count_points
-    status[:player_cards] = @player.show_cards
-    status[:dealer_score] = @dealer.count_points
-    status[:dealer_cards] = @dealer.show_cards
     if @dealer.count_points > 21 && @player.count_points <= 21
       player_win
     elsif @dealer.count_points <= 21 && @player.count_points > 21
       player_lose
+    elsif @dealer.count_points > 21 && @player.count_points > 21
+      draw(@player, @dealer)
     elsif @dealer.count_points > @player.count_points
       player_lose
     elsif @dealer.count_points < @player.count_points
       player_win
-    elsif @dealer.count_points == @player.count_points && @player.count_points <= 21
-      both_wins(@player, @dealer)
-    elsif @dealer.count_points > 21 && @player.count_points > 21
-      both_lost(@player, @dealer)
+    elsif @dealer.count_points == @player.count_points
+      draw(@player, @dealer)    
     end
+    status[:player_score] = @player.count_points
+    status[:player_cards] = @player.show_cards
+    status[:dealer_score] = @dealer.count_points
+    status[:dealer_cards] = @dealer.show_cards
+    status[:player_cash] = @player.cash
+    status[:dealer_cash] = @dealer.cash
   end
+
+  private
 
   def player_lose
     status[:status] = "You lose."
@@ -92,14 +98,8 @@ class Logic
     take_bank(@bank, @player)
   end
 
-  def both_wins(player, dealer)
+  def draw(player, dealer)
     status[:status] = "Both wins"
-    player.cash += 10
-    dealer.cash += 10
-  end
-
-  def both_lost(player, dealer)
-    status[:status] = "Both lost"
     player.cash += 10
     dealer.cash += 10
   end
