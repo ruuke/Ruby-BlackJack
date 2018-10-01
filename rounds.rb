@@ -12,19 +12,4 @@ class Rounds
     user.add_cards(random_cards)
     @desk.desk_new.delete_if { |key, value| sample.include?(key) }
   end
-
-  def count_points
-    points = []
-    @cards.each { |i| points << i.values.sum }
-    resualt = points.each.sum
-    if resualt <= 11 && self.has_an_ace?
-      resualt += 10
-    else
-      resualt
-    end
-  end
-
-  def has_an_ace?
-    show_cards.any?(/A/)
-  end
 end

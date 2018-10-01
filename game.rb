@@ -4,8 +4,7 @@ require_relative 'desk'
 require_relative 'rounds'
 
 class Game
-  #attr_accessor :bank
-  attr_reader :desk, :status
+  attr_reader :desk, :status, :player
 
   def initialize(player_name)
     @player = Users.new(player_name)

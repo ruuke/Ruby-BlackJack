@@ -11,7 +11,12 @@ class Interface
       puts "0. Exit."
       user_input = gets.chomp.downcase
       break if user_input == "0"
-      @game.new_game
+      if @game.player.cash > 0
+        @game.new_game
+      else
+        puts "Get out needy!"
+        exit
+      end
       step1
     end
   end
