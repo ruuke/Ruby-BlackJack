@@ -9,7 +9,7 @@ class Interface
     loop do
       puts "Press any key to start the game."
       puts "0. Exit."
-      user_input = gets.chomp.downcase
+      user_input = gets.chomp
       break if user_input == "0"
       if @game.player.cash > 0
         @game.new_game

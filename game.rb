@@ -1,31 +1,29 @@
-require_relative 'users'
-require_relative 'bank'
-require_relative 'desk'
-require_relative 'rounds'
+require_relative 'user'
+require_relative 'deck'
 
 class Game
   attr_reader :desk, :status, :player
 
   def initialize(player_name)
-    @player = Users.new(player_name)
-    @dealer = Users.new
+    @player = User.new(player_name)
+    @dealer = User.new
   end
 
   def new_game
-    @bank = Bank.new
+    @bank = 20
     @player.cards = []
     @dealer.cards = []
-    @rounds = Rounds.new
+    @deck = Deck.new
     @status = {}
     round1
   end
 
   def round1
-    @rounds.give_cards(@dealer, 2)
-    @rounds.give_cards(@player, 2)
-    @player.bet(@bank)
-    @dealer.bet(@bank)
-    status[:bank] = @bank.bank_size
+    2.times { @player.cards << @deck.give_cards }
+    2.times { @dealer.cards << @deck.give_cards }
+    @player.bet
+    @dealer.bet
+    status[:bank] = @bank
     status[:player_score] = @player.count_points
     status[:player_cards] = @player.show_cards
     status[:dealer_score] = "hidden"
@@ -37,29 +35,23 @@ class Game
     if @dealer.count_points >= 17
       status[:status] = "Dealer check's."
     elsif @dealer.count_points < 17
-      @rounds.give_cards(@dealer, 1)
+      @dealer.cards << @deck.give_cards
       status[:status] = "Dealer took one card."
     end
   end
 
-   def dealer_step_round3
-    if @dealer.count_points >= 17
-      status[:status] = "Dealer check's."
-      open_cards
-    elsif @dealer.count_points < 17
-      @rounds.give_cards(@dealer, 1)
-      status[:status] = "Dealer took one card."
-      open_cards
-    end
+  def dealer_step_round3
+    dealer_step_round2
+    open_cards
   end
 
   def take_one_card_round2
-    @rounds.give_cards(@player, 1)
+    @player.cards << @deck.give_cards
     dealer_step_round3
   end
 
   def take_one_card_round3
-    @rounds.give_cards(@player, 1)
+    @player.cards << @deck.give_cards
     open_cards
   end
 
@@ -69,13 +61,13 @@ class Game
     elsif @dealer.count_points <= 21 && @player.count_points > 21
       player_lose
     elsif @dealer.count_points > 21 && @player.count_points > 21
-      draw(@player, @dealer)
+      draw
     elsif @dealer.count_points > @player.count_points
       player_lose
     elsif @dealer.count_points < @player.count_points
       player_win
     elsif @dealer.count_points == @player.count_points
-      draw(@player, @dealer)    
+      draw    
     end
     status[:player_score] = @player.count_points
     status[:player_cards] = @player.show_cards
@@ -89,21 +81,21 @@ class Game
 
   def player_lose
     status[:status] = "You lose."
-    take_bank(@bank, @dealer)
+    take_bank(@dealer)
   end
 
   def player_win
     status[:status] = "You win."
-    take_bank(@bank, @player)
+    take_bank(@player)
   end
 
-  def draw(player, dealer)
+  def draw
     status[:status] = "Both wins"
-    player.cash += 10
-    dealer.cash += 10
+    @player.cash += 10
+    @dealer.cash += 10
   end
 
-  def take_bank(bank, user)
-    user.cash += bank.bank_size
+  def take_bank(user)
+    user.cash += 20
   end
 end

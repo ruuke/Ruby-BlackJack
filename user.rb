@@ -1,4 +1,4 @@
-class Users
+class User
   attr_accessor :cards, :cash
   attr_reader :name
 
@@ -11,7 +11,7 @@ class Users
   def count_points
     points = []
     @cards.each { |i| points << i.values.sum }
-    result = points.each.sum
+    result = points.sum
     if result <= 11 && self.has_an_ace?
       result += 10
     else
@@ -20,12 +20,11 @@ class Users
   end
 
   def has_an_ace?
-    show_cards.any?(/A/)
+    show_cards.each { |i| i.any?(/A/) }
   end
 
-  def bet(bank)
+  def bet
      @cash -= 10
-     bank.bank_size +=10
   end
 
   def add_cards(cards)
@@ -33,10 +32,8 @@ class Users
   end
 
   def show_cards
-    @user_cards = []
-    @cards.each do |i|
-      i.each_key { |key| @user_cards << key }
-    end
-    @user_cards
+    cards = []
+    @cards.each { |i| cards << i.keys }
+    cards
   end
 end
