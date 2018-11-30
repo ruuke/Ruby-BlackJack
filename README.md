@@ -1,1 +1,1 @@
-# Ruby-BlackJack is a educational project from Thinknetica lessons.
+# Ruby-BlackJack is an educational project from Thinknetica lessons.
